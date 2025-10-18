@@ -2,22 +2,28 @@
 #include <fstream>
 #include <string>
 #include <queue>
+#include <map>
 using namespace std;
 
-class keyWord {
-    public:
-        string content;
+const map<string, string> keyWords = {
+    {
+        "print",
+        "OUTPUT"
+    },
+    {
+        "(",
+        "STARTPARAMS"
+    },
+    {
+        ")",
+        "ENDPARAMS"
+    },
+    {
+        ";",
+        "ENDLN"
+    }
 };
 
-class line {
-    public:
-        queue<keyWord> content;
-};
-
-class code {
-    public:
-        queue<line> content;
-};
 
 string ReadScript(ifstream& programFile)
 {
@@ -27,36 +33,81 @@ string ReadScript(ifstream& programFile)
     return fileContent;
 }
 
+string tokenisedCode;
+
+void parse(string word)
+{
+    cout << "PARSING (" << word << ")" << endl;
+    if (keyWords.find(word) != keyWords.end())
+    {
+        tokenisedCode += keyWords.at(word);
+        tokenisedCode += ' ';
+    }
+    else
+    {
+        tokenisedCode += word;
+        tokenisedCode += ' ';
+    }
+}
+
 int main()
 {
     ifstream programFile("testscript.txt");
+    const string RAW_CODE = ReadScript(programFile);
+    programFile.close();
 
-    string fileContent;
     string word;
 
-    code script;
-    
-    const string rawCode = ReadScript(programFile);
-    line currentLine;
-    for (int i = 0; i < fileContent.length(); i++)
+    for (int i = 0; i < RAW_CODE.length(); i++)
     {
-        if (fileContent[i] == ' ') {
-            keyWord newWord;
-            newWord.content = word;
-            word = string();
-
-            currentLine.content.push(newWord);
-        }
-        else if (fileContent[i] == ';')
+        if (RAW_CODE[i] == ' ')
         {
-            script.content.push(currentLine);
-            currentLine.content = queue<keyWord>();
+            parse(word);
+            word = string();
+        }
+        else if (RAW_CODE[i] == ';')
+        {
+            if (word != string()) { parse(word); }
+            word = string();
+            parse(";");
+        }
+        else if (RAW_CODE[i] == '(')
+        {
+            parse(word);
+            word = string();
+            parse("(");
+            int c = 1;
+            bool paramLoop = true;
+            while (paramLoop == true) {
+                if (RAW_CODE[i+c] == ')') {
+                    parse(word);
+                    parse(")");
+                    word = string();
+                    paramLoop = false;
+                    i += c;
+                    c = 0;
+                }
+                else
+                {
+                    word += RAW_CODE[i+c];
+                }
+                cout << c << " " << i+c << RAW_CODE[i+c] << endl;
+                c++;
+            }
         }
         else
         {
-            word += fileContent[i];
+            word += RAW_CODE[i];
         }
+        cout << i << ' ' << RAW_CODE[i] << endl;
+        //cout << tokenisedCode << endl;
     }
+
+    ofstream refinedCode("RefinedCode.txt");
+    refinedCode << tokenisedCode;
+    refinedCode.close();
+
+    cout << tokenisedCode;
 
     return 0;
 }

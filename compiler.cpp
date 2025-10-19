@@ -6,22 +6,36 @@
 using namespace std;
 
 const map<string, string> keyWords = {
-    {
-        "print",
-        "OUTPUT"
-    },
-    {
-        "(",
-        "STARTPARAMS"
-    },
-    {
-        ")",
-        "ENDPARAMS"
-    },
-    {
-        ";",
-        "ENDLN"
-    }
+    {"(", "START_PARAMS"},
+    {")", "END_PARAMS"},
+    {"{", "START_FUNC"},
+    {"}", "END_FUNC"},
+    {"[", "START_ARRAY"},
+    {"]", "END_ARRAY"},
+    {";", "ENDLN"},
+    {"print", "OUTPUT"},
+    {"if", "IF"},
+    {"while", "WHILE"},
+    {"for", "FOR"},
+    {"int", "TYPE_INT"},
+    {"float", "TYPE_FLOAT"},
+    {"double", "TYPE_DOUBLE"},
+    {"string", "TYPE_STRING"},
+    {"bool", "TYPE_BOOL"},
+    {"=", "ASSIGN"},
+    {"==", "EQUAL_TO"},
+    {"!=", "NOT_EQUAL_TO"},
+    {">", "GREATER_THAN"},
+    {"<", "LESSER_THAN"},
+    {">=", "GREATER_EQUAL_TO"},
+    {"<=", "LESSER_EQUAL_TO"},
+    {"and", "AND"},
+    {"or", "OR"},
+    {"not", "NOT"},
+    {"and!", "NAND"},
+    {"or!", "NOR"},
+    {"and?", "XAND"},
+    {"or?", "XOR"}
 };
 
 
@@ -37,16 +51,18 @@ string tokenisedCode;
 
 void parse(string word)
 {
-    cout << "PARSING (" << word << ")" << endl;
-    if (keyWords.find(word) != keyWords.end())
-    {
-        tokenisedCode += keyWords.at(word);
-        tokenisedCode += ' ';
-    }
-    else
-    {
-        tokenisedCode += word;
-        tokenisedCode += ' ';
+    if (word != string()) {
+        cout << "PARSING (" << word << ")" << endl;
+        if (keyWords.find(word) != keyWords.end())
+        {
+            tokenisedCode += keyWords.at(word);
+            tokenisedCode += ' ';
+        }
+        else
+        {
+            tokenisedCode += word;
+            tokenisedCode += ' ';
+        }
     }
 }
 
@@ -62,8 +78,12 @@ int main()
     {
         if (RAW_CODE[i] == ' ')
         {
-            parse(word);
-            word = string();
+            if (word != string())
+            {
+                parse(word);
+                cout << "parse space!" << endl;
+                word = string();
+            }
         }
         else if (RAW_CODE[i] == ';')
         {
@@ -78,10 +98,34 @@ int main()
             parse("(");
             int c = 1;
             bool paramLoop = true;
-            while (paramLoop == true) {
+            while (paramLoop) {
                 if (RAW_CODE[i+c] == ')') {
                     parse(word);
                     parse(")");
+                    word = string();
+                    paramLoop = false;
+                    i += c;
+                    c = 0;
+                }
+                else
+                {
+                    word += RAW_CODE[i+c];
+                }
+                cout << c << " " << i+c << RAW_CODE[i+c] << endl;
+                c++;
+            }
+        }
+        else if (RAW_CODE[i] == '[')
+        {
+            parse(word);
+            word = string();
+            parse("[");
+            int c = 1;
+            bool paramLoop = true;
+            while (paramLoop) {
+                if (RAW_CODE[i+c] == ']') {
+                    parse(word);
+                    parse("]");
                     word = string();
                     paramLoop = false;
                     i += c;
@@ -99,8 +143,7 @@ int main()
         {
             word += RAW_CODE[i];
         }
-        cout << i << ' ' << RAW_CODE[i] << endl;
-        //cout << tokenisedCode << endl;
+        cout << i << " (" << RAW_CODE[i] << ") (" << (RAW_CODE[i] == ' ' && word == string()) << ")"<< endl;
     }
 
     ofstream refinedCode("RefinedCode.txt");

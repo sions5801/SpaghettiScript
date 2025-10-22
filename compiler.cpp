@@ -5,7 +5,7 @@
 #include <map>
 using namespace std;
 
-const map<string, string> keyWords = {
+const map<string, string> KEY_WORDS = {
     {"(", "START_PARAMS"},
     {")", "END_PARAMS"},
     {"{", "START_FUNC"},
@@ -38,7 +38,6 @@ const map<string, string> keyWords = {
     {"or?", "XOR"}
 };
 
-
 string ReadScript(ifstream& programFile)
 {
     string line;
@@ -53,9 +52,9 @@ void parse(string word)
 {
     if (word != string()) {
         cout << "PARSING (" << word << ")" << endl;
-        if (keyWords.find(word) != keyWords.end())
+        if (KEY_WORDS.find(word) != KEY_WORDS.end())
         {
-            tokenisedCode += keyWords.at(word);
+            tokenisedCode += KEY_WORDS.at(word);
             tokenisedCode += ' ';
         }
         else
@@ -100,6 +99,13 @@ int main()
             bool paramLoop = true;
             while (paramLoop) {
                 if (RAW_CODE[i+c] == ')') {
+
+                    for (int w = 0; w < word.length(); w++) {
+                        if (RAW_CODE[i+w] == ' ') {
+                            
+                        }
+                    }
+
                     parse(word);
                     parse(")");
                     word = string();
@@ -152,5 +158,7 @@ int main()
 
     cout << tokenisedCode;
 
+    string endcode;
+    cin >> endcode;
     return 0;
 }

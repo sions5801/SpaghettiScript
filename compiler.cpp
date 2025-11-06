@@ -22,6 +22,8 @@ const map<string, string> KEY_WORDS = {
     {"double", "TYPE_DOUBLE"},
     {"string", "TYPE_STRING"},
     {"bool", "TYPE_BOOL"},
+    {"true", "TRUE"},
+    {"false", "FALSE"},
     {"=", "ASSIGN"},
     {"==", "EQUAL_TO"},
     {"!=", "NOT_EQUAL_TO"},
@@ -35,7 +37,15 @@ const map<string, string> KEY_WORDS = {
     {"and!", "NAND"},
     {"or!", "NOR"},
     {"and?", "XAND"},
-    {"or?", "XOR"}
+    {"or?", "XOR"},
+    {"+", "ADD"},
+    {"-", "SUBTRACT"},
+    {"*", "MULTIPLY"},
+    {"/", "DIVIDE"},
+    {"//", "DIV"},
+    {"&", "MOD"},
+    {"++", "INCREMENT"},
+    {"--", "DECREMENT"}
 };
 
 string ReadScript(ifstream& programFile)
@@ -60,17 +70,15 @@ void parse(string word)
         else
         {
             tokenisedCode += word;
-            tokenisedCode += ' ';
+            if (word != "\"") {
+                tokenisedCode += ' ';
+            }
         }
     }
 }
 
-int main()
+void tokeniser(string RAW_CODE)
 {
-    ifstream programFile("testscript.txt");
-    const string RAW_CODE = ReadScript(programFile);
-    programFile.close();
-
     string word;
 
     for (int i = 0; i < RAW_CODE.length(); i++)
@@ -95,10 +103,22 @@ int main()
             parse(word);
             word = string();
             parse("(");
+        }
+        else if (RAW_CODE[i] == ')')
+        {
+            parse(word);
+            word = string();
+            parse(")");
+        }
+        else if (RAW_CODE[i] == '"')
+        {
+            parse(word);
+            word = string();
+            parse("\"");
             int c = 1;
             bool paramLoop = true;
             while (paramLoop) {
-                if (RAW_CODE[i+c] == ')') {
+                if (RAW_CODE[i+c] == '"') {
 
                     for (int w = 0; w < word.length(); w++) {
                         if (RAW_CODE[i+w] == ' ') {
@@ -106,8 +126,8 @@ int main()
                         }
                     }
 
-                    parse(word);
-                    parse(")");
+                    parse(word+'\"');
+                    //parse("\"");
                     word = string();
                     paramLoop = false;
                     i += c;
@@ -126,24 +146,24 @@ int main()
             parse(word);
             word = string();
             parse("[");
-            int c = 1;
-            bool paramLoop = true;
-            while (paramLoop) {
-                if (RAW_CODE[i+c] == ']') {
-                    parse(word);
-                    parse("]");
-                    word = string();
-                    paramLoop = false;
-                    i += c;
-                    c = 0;
-                }
-                else
-                {
-                    word += RAW_CODE[i+c];
-                }
-                cout << c << " " << i+c << RAW_CODE[i+c] << endl;
-                c++;
-            }
+        }
+        else if (RAW_CODE[i] == ']')
+        {
+            parse(word);
+            word = string();
+            parse("]");
+        }
+        else if (RAW_CODE[i] == '{')
+        {
+            parse(word);
+            word = string();
+            parse("{");
+        }
+        else if (RAW_CODE[i] == '}')
+        {
+            parse(word);
+            word = string();
+            parse("}");
         }
         else
         {
@@ -157,8 +177,13 @@ int main()
     refinedCode.close();
 
     cout << tokenisedCode;
+}
 
-    string endcode;
-    cin >> endcode;
+int main()
+{
+    ifstream programFile("testscript.txt");
+    const string RAW_CODE = ReadScript(programFile);
+    programFile.close();
+    tokeniser(RAW_CODE);
     return 0;
 }

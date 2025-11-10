@@ -4,7 +4,7 @@
         {
             "label": "C/C++: g++.exe build active file",
             "type": "shell",
-            "command": "C:/Users/Student3/WorkPlacementStuff/MinGW/ucrt64/bin/g++.exe",
+            "command": "C:/msys64/ucrt64/bin/g++.exe",
             "args": [
                 "-g",
                 "${file}",
@@ -46,7 +46,7 @@
         {
             "type": "cppbuild",
             "label": "C/C++: g++.exe build active file",
-            "command": "C:\\Users\\Student3\\WorkPlacementStuff\\MinGW\\ucrt64\\bin\\g++.exe",
+            "command": "C:/msys64/ucrt64/bin/g++.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",

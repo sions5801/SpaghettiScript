@@ -25,6 +25,10 @@ const map<string, string> KEY_WORDS = {
     {"true", "TRUE"},
     {"false", "FALSE"},
     {"=", "ASSIGN"},
+    {"+=", "ASSIGN_ADD"},
+    {"-=", "ASSIGN_SUBTRACT"},
+    {"*=", "ASSIGN_MULTIPLY"},
+    {"/=", "ASSIGN_DIVIDE"},
     {"==", "EQUAL_TO"},
     {"!=", "NOT_EQUAL_TO"},
     {">", "GREATER_THAN"},
@@ -48,7 +52,7 @@ const map<string, string> KEY_WORDS = {
     {"--", "DECREMENT"}
 };
 
-string ReadScript(ifstream& programFile)
+string readScript(ifstream& programFile)
 {
     string line;
     string fileContent;
@@ -61,7 +65,7 @@ string tokenisedCode;
 void parse(string word)
 {
     if (word != string()) {
-        cout << "PARSING (" << word << ")" << endl;
+        //cout << "PARSING (" << word << ")" << endl;
         if (KEY_WORDS.find(word) != KEY_WORDS.end())
         {
             tokenisedCode += KEY_WORDS.at(word);
@@ -98,18 +102,6 @@ void tokeniser(string RAW_CODE)
             word = string();
             parse(";");
         }
-        else if (RAW_CODE[i] == '(')
-        {
-            parse(word);
-            word = string();
-            parse("(");
-        }
-        else if (RAW_CODE[i] == ')')
-        {
-            parse(word);
-            word = string();
-            parse(")");
-        }
         else if (RAW_CODE[i] == '"')
         {
             parse(word);
@@ -127,7 +119,6 @@ void tokeniser(string RAW_CODE)
                     }
 
                     parse(word+'\"');
-                    //parse("\"");
                     word = string();
                     paramLoop = false;
                     i += c;
@@ -141,49 +132,50 @@ void tokeniser(string RAW_CODE)
                 c++;
             }
         }
-        else if (RAW_CODE[i] == '[')
+        else if (RAW_CODE[i] == '[' || RAW_CODE[i] == ']' || RAW_CODE[i] == '{' || RAW_CODE[i] == '}' || RAW_CODE[i] == '(' || RAW_CODE[i] == ')')
         {
             parse(word);
             word = string();
-            parse("[");
+            parse(RAW_CODE[i]+string());
         }
-        else if (RAW_CODE[i] == ']')
+        else if (RAW_CODE[i] == '+' || RAW_CODE[i] == '-' || RAW_CODE[i] == '*' || RAW_CODE[i] == '/')
         {
-            parse(word);
-            word = string();
-            parse("]");
-        }
-        else if (RAW_CODE[i] == '{')
-        {
-            parse(word);
-            word = string();
-            parse("{");
-        }
-        else if (RAW_CODE[i] == '}')
-        {
-            parse(word);
-            word = string();
-            parse("}");
+            //parse(word);
+            //if (RAW_CODE[i-1] != ' ') {parse(" "); cout << "space";}
+            if (RAW_CODE[i+1] == RAW_CODE[i] || RAW_CODE[i+1] == '=')
+            {
+                cout << "equal or = found!";
+                parse(word);
+                word = RAW_CODE[i];
+                i++;
+                word += RAW_CODE[i];
+            }
         }
         else
         {
             word += RAW_CODE[i];
         }
-        cout << i << " (" << RAW_CODE[i] << ") (" << (RAW_CODE[i] == ' ' && word == string()) << ")"<< endl;
+        cout << i << " (" << RAW_CODE[i] << ") (" << (RAW_CODE[i] == ' ' && word == string()) << ")" << endl;
     }
+    parse(word);
 
     ofstream refinedCode("RefinedCode.txt");
     refinedCode << tokenisedCode;
     refinedCode.close();
 
     cout << tokenisedCode;
+    /*
+    string endStr;
+    cin >> endStr;
+    */
 }
 
 int main()
 {
     ifstream programFile("testscript.txt");
-    const string RAW_CODE = ReadScript(programFile);
+    const string RAW_CODE = readScript(programFile);
     programFile.close();
+
     tokeniser(RAW_CODE);
     return 0;
 }

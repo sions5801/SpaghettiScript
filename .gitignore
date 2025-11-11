@@ -1,4 +1,7 @@
 *
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/
 !compiler.cpp
 !testscript.txt
 !.gitignore

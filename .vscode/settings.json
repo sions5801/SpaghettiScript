@@ -4,6 +4,8 @@
         "stacktrace": "cpp",
         "thread": "cpp",
         "iostream": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "xutility": "cpp",
+        "xstring": "cpp"
     }
 }

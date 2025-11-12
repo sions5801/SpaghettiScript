@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 const map<string, string> KEY_WORDS = {
@@ -55,6 +56,64 @@ const map<string, string> KEY_WORDS = {
     {".", "PROPERTY"}
 };
 
+class Statement {
+    public:
+        string Output(vector<string> tokenList, int &index) {
+            return "printf";
+        }
+        string EndLine() {
+            return ";";
+        }
+        string TypeExpression(vector<string> tokenList, int &index)
+        {
+            string statement;
+
+            if (tokenList[index] == "TYPE_INT")
+            {
+                statement = "int";
+            }
+            else if (tokenList[index] == "TYPE_FLOAT")
+            {
+                statement = "float";
+            }
+            else if (tokenList[index] == "TYPE_DOUBLE")
+            {
+                statement = "double";
+            }
+            else if (tokenList[index] == "TYPE_STRING")
+            {
+                statement = "std::string";
+            }
+            else if (tokenList[index] == "TYPE_CHAR")
+            {
+                statement = "char";
+            }
+            else if (tokenList[index] == "TYPE_BOOL")
+            {
+                statement = "bool";
+            }
+            index++;
+            string varName = tokenList[index];
+            return statement + ' ' + varName + ' ';
+        }
+        string Assign()
+        {
+            return "= ";
+        }
+        string Params(vector<string> tokenList, int& index)
+        {
+            string parameters = "(";
+            for (index++; tokenList[index] != "END_PARAMS"; index++)
+            {
+                parameters += tokenList[index];
+            }
+            parameters += ')';
+            return parameters;
+        }
+};
+
+Statement statementHandler;
+
 string readScript(ifstream& programFile)
 {
     string line;
@@ -63,7 +122,48 @@ string readScript(ifstream& programFile)
     return fileContent;
 }
 
+vector<string> addedLibraries;
 vector<string> translatedWords;
+
+//Maybe for easier translation, convert tokens into a class and make an object for every word?
+//Would let you display the type and value of a token, for example token 'OUTPUT' would have Value:
+//"OUTPUT" alongside Type: Function
+string createStatement(string token, int &currentIndex)
+{
+    string returnToken;
+    if (token == "OUTPUT")
+    {
+        //if (find(addedLibraries.begin(), addedLibraries.end(), "stdio.h") != addedLibraries.end())
+        if (count(addedLibraries.begin(), addedLibraries.end(), "stdio.h") == 0)
+        {
+            addedLibraries.push_back("stdio.h");
+        }
+        return statementHandler.Output(translatedWords, currentIndex);
+    }
+    if (token == "ENDLN")
+    {
+        return statementHandler.EndLine();
+    }
+    if (token == "TYPE_INT" || token == "TYPE_FLOAT" || token == "TYPE_DOUBLE" || token == "TYPE_STRING" || token == "TYPE_CHAR" || token == "TYPE_BOOL")
+    {
+        if (token == "TYPE_STRING" && (count(addedLibraries.begin(), addedLibraries.end(), "string") == 0))
+        {
+            addedLibraries.push_back("string");
+        }
+        return statementHandler.TypeExpression(translatedWords, currentIndex);
+    }
+    if (token == "ASSIGN") {
+        return statementHandler.Assign();
+    }
+    if (token == "START_PARAMS")
+    {
+        return statementHandler.Params(translatedWords, currentIndex);
+    }
+    else
+    {
+        return token;
+    }
+}
 
 void translator(const string TOKENISED_CODE)
 {
@@ -81,13 +181,15 @@ void translator(const string TOKENISED_CODE)
         } else if (TOKENISED_CODE[i] == '"')
         {
             string fullString;
-            translatedWords.push_back(token);
+            if (token != string()) {translatedWords.push_back(token);}
             token = string();
             fullString += '"';
             int c = 1;
             bool paramLoop = true;
-            while (paramLoop) {
-                if (TOKENISED_CODE[i+c] == '"') {
+            while (paramLoop)
+            {
+                if (TOKENISED_CODE[i+c] == '"')
+                {
 
                     /*for (int w = 0; w < word.length(); w++) {
                         if (RAW_CODE[i+w] == ' ') {
@@ -108,19 +210,25 @@ void translator(const string TOKENISED_CODE)
                 //cout << c << " " << i+c << TOKENISED_CODE[i+c] << endl;
                 c++;
             }
+            if (fullString != string()) {translatedWords.push_back(fullString);}
         }
         else
         {
             token += TOKENISED_CODE[i];
         }
+    }
 
-    for (string token : translatedWords)
+    for (int i; i < translatedWords.size(); i++)
     {
-        translatedCode += (token + ' ');
+        translatedCode += createStatement(translatedWords[i], i);
     }
 
+    string libraries;
+    for (int i = 0; i < addedLibraries.size(); i++)
+    {
+        libraries += ("#include<" + addedLibraries[i] + ">" + "\n");
     }
-    const string WRITE_STRING = ("int main() {" + translatedCode + "return 0;}");
+    const string WRITE_STRING = (libraries + "int main() {" + translatedCode + "return 0;}");
     
     ofstream translatedFile("TranslatedCode.cpp");
     translatedFile << WRITE_STRING;
@@ -231,11 +339,11 @@ string tokeniser(string RAW_CODE)
     refinedCode << tokenisedCode;
     refinedCode.close();
 
-    cout << tokenisedCode;
-    /*
-    string endStr;
-    cin >> endStr;
-    */
+    //cout << tokenisedCode;
+    
+    //string endStr;
+    //cin >> endStr;
+    
    return tokenisedCode;
 }
 

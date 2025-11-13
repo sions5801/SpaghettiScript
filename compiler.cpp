@@ -56,7 +56,8 @@ const map<string, string> KEY_WORDS = {
     {".", "PROPERTY"}
 };
 
-class Statement {
+class Statement
+{
     public:
         string Output(vector<string> tokenList, int &index) {
             return "printf";
@@ -100,15 +101,29 @@ class Statement {
         {
             return "= ";
         }
-        string Params(vector<string> tokenList, int& index)
+        string Params(string token)
         {
-            string parameters = "(";
-            for (index++; tokenList[index] != "END_PARAMS"; index++)
+            if (token == "START_PARAMS")
             {
-                parameters += tokenList[index];
+                return "(";
             }
-            parameters += ')';
-            return parameters;
+            return ")";
+        }
+        string Func(string token)
+        {
+            if (token == "START_FUNC")
+            {
+                return "{";
+            }
+            return "}";
+        }
+        string Array(string token)
+        {
+            if (token == "START_ARRAY")
+            {
+                return "[";
+            }
+            return "]";
         }
 };
 
@@ -155,9 +170,17 @@ string createStatement(string token, int &currentIndex)
     if (token == "ASSIGN") {
         return statementHandler.Assign();
     }
-    if (token == "START_PARAMS")
+    if (token == "START_PARAMS" || token == "END_PARAMS")
     {
-        return statementHandler.Params(translatedWords, currentIndex);
+        return statementHandler.Params(token);
+    }
+    if (token == "START_FUNC" || token == "END_FUNC")
+    {
+        return statementHandler.Func(token);
+    }
+    if (token == "START_ARRAY" || token == "END_ARRAY")
+    {
+        return statementHandler.Array(token);
     }
     else
     {
@@ -267,7 +290,7 @@ string tokeniser(string RAW_CODE)
             if (word != string())
             {
                 parseWord(word);
-                cout << "parseWord space!" << endl;
+                //cout << "parseWord space!" << endl;
                 word = string();
             }
         }

@@ -138,29 +138,32 @@ TokenType initToken(const string VALUE)
         return TYPE_MAP.at(VALUE);
     }
     
-    try
-    {
-        if (stoi(VALUE)) {return INTEGER;}
-        if (stof(VALUE)) {return FLOAT;}
-        if (stod(VALUE)) {return DOUBLE;}
-        if (VALUE == "true" || VALUE == "false") {return BOOLEAN;}
-        if (VALUE.length() == 3 && VALUE[0] == '\'' && VALUE[VALUE.length()-1] == '\'') {return CHARACTER;}
-        if (VALUE[0] == '"' && VALUE[VALUE.length()-1] == '"') {return STRING;}
-    }
-    catch (const exception& e)
-    {
-        return UNKNOWN;
-    } 
+    try {if (stoi(VALUE)) {return INTEGER;}}
+    catch (const exception& e) {}
+
+    try {if (stof(VALUE)) {return FLOAT;}}
+    catch (const exception& e) {}
+
+    try {if (stod(VALUE)) {return DOUBLE;}}
+    catch (const exception& e) {}
+
+    try {if (VALUE == "TRUE" || VALUE == "FALSE") {return BOOLEAN;}}
+    catch (const exception& e) {}
+
+    try {if (VALUE.length() == 3 && VALUE[0] == '\'' && VALUE[VALUE.length()-1] == '\'') {return CHARACTER;}}
+    catch (const exception& e) {}
+
+    try {if (VALUE[0] == '"' && VALUE[VALUE.length()-1] == '"') {return STRING;}}
+    catch (const exception& e) {}
     return UNKNOWN;
 
     /*
-    
-        
-        
-        
-        
-        
-        */
+    if (stof(VALUE)) {return FLOAT;}
+    if (stod(VALUE)) {return DOUBLE;}
+    if (VALUE == "TRUE" || VALUE == "FALSE") {return BOOLEAN;}
+    if (VALUE.length() == 3 && VALUE[0] == '\'' && VALUE[VALUE.length()-1] == '\'') {return CHARACTER;}
+    if (VALUE[0] == '"' && VALUE[VALUE.length()-1] == '"') {return STRING;}
+    */
 }
 
 #endif

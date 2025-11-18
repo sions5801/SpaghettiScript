@@ -252,28 +252,27 @@ vector<Token> tokeniser(string RAW_CODE)
 
     for (int i = 0; i < RAW_CODE.length(); i++)
     {
-        if (RAW_CODE[i] == ' ')
+        cout << RAW_CODE[i] << " " << endl;
+        if (isspace(RAW_CODE[i]))
+        {
+            if (word != string())
+            {
+                parseWord(word);
+                word = string();
+            }
+        }
+        else if (RAW_CODE[i] == '"' || RAW_CODE[i] == '\'')
         {
             parseWord(word);
             word = string();
-        }
-        if(RAW_CODE[i] == '[' || RAW_CODE[i] == ']' || RAW_CODE[i] == '{' || RAW_CODE[i] == '}' || RAW_CODE[i] == '(' || RAW_CODE[i] == ')' || RAW_CODE[i] == ';' || RAW_CODE[i] == '.' || RAW_CODE[i] == ',')
-        {
-            parseWord(word);
-            parseWord(RAW_CODE[i] + string());
-            word = string();
-            i++;
-        }
-        if (RAW_CODE[i] == '"')
-        {
-            parseWord(word);
-            word = "\"";
+            char typeChar = RAW_CODE[i];
+            word = typeChar+string();
             int c = 1;
             while (true)
             {
-                if (RAW_CODE[i+c] == '"')
+                if (RAW_CODE[i+c] == typeChar)
                 {
-                    word += '"';
+                    word += typeChar;
                     parseWord(word);
                     word = string();
                     i += c;
@@ -312,10 +311,22 @@ vector<Token> tokeniser(string RAW_CODE)
                 parseWord(string() + RAW_CODE[i]);
             }
         }
+        else if (RAW_CODE[i] == '[' || RAW_CODE[i] == ']' || RAW_CODE[i] == '{' || RAW_CODE[i] == '}' || RAW_CODE[i] == '(' || RAW_CODE[i] == ')' || RAW_CODE[i] == ';' || RAW_CODE[i] == '.' || RAW_CODE[i] == ',')
+        {
+            cout << "found punctuator " << RAW_CODE[i] << endl;
+            if (word != string())
+            {
+                parseWord(word);
+            }
+            parseWord(RAW_CODE[i] + string());
+            word = string();
+            //i++;
+        }
         else
         {
             word += RAW_CODE[i];
         }
+        cout << "word is " << word << endl;
     }
 
 

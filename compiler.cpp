@@ -8,6 +8,7 @@
 #include "References.hpp"
 using namespace std;
 
+/*
 class Statement
 {
     public:
@@ -80,7 +81,7 @@ class Statement
 };
 
 Statement statementHandler;
-
+*/
 string readScript(ifstream& programFile)
 {
     string line;
@@ -88,6 +89,7 @@ string readScript(ifstream& programFile)
     while (getline(programFile, line)) { fileContent += line; }
     return fileContent;
 }
+/*
 
 vector<string> addedLibraries;
 vector<string> translatedWords;
@@ -166,11 +168,7 @@ void translator(const string TOKENISED_CODE)
                 if (TOKENISED_CODE[i+c] == '"')
                 {
 
-                    /*for (int w = 0; w < word.length(); w++) {
-                        if (RAW_CODE[i+w] == ' ') {
-                            
-                        }
-                    }*/
+                    
 
                     fullString += (token+"\"");
                     token = string();
@@ -209,8 +207,7 @@ void translator(const string TOKENISED_CODE)
     translatedFile << WRITE_STRING;
     translatedFile.close();
 }
-
-
+*/
 class Token {
     public:
         string Value;
@@ -218,7 +215,7 @@ class Token {
         void Init(const string WORD)
         {
             this->Value = toToken(WORD);
-            this->Type = initToken(Value);
+            this->Type = initToken(Value); //pass value of previous token as string
         }
 };
 
@@ -232,9 +229,9 @@ void parseWord(string word)
         word.erase(0);
         if (word.length() == 0) {break;}
     }
-    while(isspace(word[-1]))
+    while(isspace(word[word.length()-1]))
     {
-        word.erase(-1);
+        word.erase(word.length()-1);
         if (word.length() == 0) {break;}
     }
 
@@ -320,7 +317,6 @@ vector<Token> tokeniser(string RAW_CODE)
             }
             parseWord(RAW_CODE[i] + string());
             word = string();
-            //i++;
         }
         else
         {
@@ -332,213 +328,6 @@ vector<Token> tokeniser(string RAW_CODE)
 
     return tokenisedCode;
 }
-
-/*
-string tokeniser(string RAW_CODE)
-{
-    string word;
-
-    for (int i = 0; i < RAW_CODE.length(); i++)
-    {
-        if (RAW_CODE[i] == ' ')
-        {
-            if (word != string())
-            {
-                parseWord(word);
-                //cout << "parseWord space!" << endl;
-                word = string();
-            }
-        }
-        else if (RAW_CODE[i] == '"')
-        {
-            parseWord(word);
-            word = string();
-            parseWord("\"");
-            int c = 1;
-            bool paramLoop = true;
-            while (paramLoop) {
-                if (RAW_CODE[i+c] == '"') {
-
-                    for (int w = 0; w < word.length(); w++) {
-                        if (RAW_CODE[i+w] == ' ') {
-                            
-                        }
-                    }
-
-                    parseWord(word+'\"');
-                    word = string();
-                    paramLoop = false;
-                    i += c;
-                    c = 0;
-                }
-                else
-                {
-                    word += RAW_CODE[i+c];
-                }
-                cout << c << " " << i+c << RAW_CODE[i+c] << endl;
-                c++;
-            }
-        }
-        else if (RAW_CODE[i] == '[' || RAW_CODE[i] == ']' || RAW_CODE[i] == '{' || RAW_CODE[i] == '}' || RAW_CODE[i] == '(' || RAW_CODE[i] == ')' || RAW_CODE[i] == ';' || RAW_CODE[i] == '.')
-        {
-            if (word != string()) { parseWord(word); }
-            word = string();
-            parseWord(RAW_CODE[i]+string());
-        }
-        else if (RAW_CODE[i] == '+' || RAW_CODE[i] == '-' || RAW_CODE[i] == '*' || RAW_CODE[i] == '/')
-        {
-            //parseWord(word);
-            //if (RAW_CODE[i-1] != ' ') {parseWord(" "); cout << "space";}
-            if (RAW_CODE[i+1] == RAW_CODE[i] || RAW_CODE[i+1] == '=')
-            {
-                cout << "equal or = found!";
-                parseWord(word);
-                word = RAW_CODE[i];
-                i++;
-                word += RAW_CODE[i];
-            }
-            else
-            {
-                parseWord(word);
-                word = RAW_CODE[i];
-                parseWord(word);
-                word = string();
-            }
-        }
-        else
-        {
-            word += RAW_CODE[i];
-        }
-        cout << i << " (" << RAW_CODE[i] << ") (" << (RAW_CODE[i] == ' ' && word == string()) << ")" << endl;
-    }
-    parseWord(word);
-
-    ofstream refinedCode("RefinedCode.txt");
-    refinedCode << tokenisedCode;
-    refinedCode.close();
-
-    //cout << tokenisedCode;
-    
-    //string endStr;
-    //cin >> endStr;
-    
-   return tokenisedCode;
-}
-*/
-
-/*
-string tokenisedCode;
-
-void parseWord(const string WORD)
-{
-    if (WORD != string()) {
-        //cout << "PARSING (" << word << ")" << endl;
-        if (KEY_WORDS.find(WORD) != KEY_WORDS.end())
-        {
-            tokenisedCode += KEY_WORDS.at(WORD);
-            tokenisedCode += ' ';
-        }
-        else
-        {
-            tokenisedCode += WORD;
-            if (WORD != "\"") {
-                tokenisedCode += ' ';
-            }
-        }
-    }
-}
-
-string tokeniser(string RAW_CODE)
-{
-    string word;
-
-    for (int i = 0; i < RAW_CODE.length(); i++)
-    {
-        if (RAW_CODE[i] == ' ')
-        {
-            if (word != string())
-            {
-                parseWord(word);
-                //cout << "parseWord space!" << endl;
-                word = string();
-            }
-        }
-        else if (RAW_CODE[i] == '"')
-        {
-            parseWord(word);
-            word = string();
-            parseWord("\"");
-            int c = 1;
-            bool paramLoop = true;
-            while (paramLoop) {
-                if (RAW_CODE[i+c] == '"') {
-
-                    /*for (int w = 0; w < word.length(); w++) {
-                        if (RAW_CODE[i+w] == ' ') {
-                            
-                        }
-                    }*//*
-
-                    parseWord(word+'\"');
-                    word = string();
-                    paramLoop = false;
-                    i += c;
-                    c = 0;
-                }
-                else
-                {
-                    word += RAW_CODE[i+c];
-                }
-                cout << c << " " << i+c << RAW_CODE[i+c] << endl;
-                c++;
-            }
-        }
-        else if (RAW_CODE[i] == '[' || RAW_CODE[i] == ']' || RAW_CODE[i] == '{' || RAW_CODE[i] == '}' || RAW_CODE[i] == '(' || RAW_CODE[i] == ')' || RAW_CODE[i] == ';' || RAW_CODE[i] == '.')
-        {
-            if (word != string()) { parseWord(word); }
-            word = string();
-            parseWord(RAW_CODE[i]+string());
-        }
-        else if (RAW_CODE[i] == '+' || RAW_CODE[i] == '-' || RAW_CODE[i] == '*' || RAW_CODE[i] == '/')
-        {
-            //parseWord(word);
-            //if (RAW_CODE[i-1] != ' ') {parseWord(" "); cout << "space";}
-            if (RAW_CODE[i+1] == RAW_CODE[i] || RAW_CODE[i+1] == '=')
-            {
-                cout << "equal or = found!";
-                parseWord(word);
-                word = RAW_CODE[i];
-                i++;
-                word += RAW_CODE[i];
-            }
-            else
-            {
-                parseWord(word);
-                word = RAW_CODE[i];
-                parseWord(word);
-                word = string();
-            }
-        }
-        else
-        {
-            word += RAW_CODE[i];
-        }
-        cout << i << " (" << RAW_CODE[i] << ") (" << (RAW_CODE[i] == ' ' && word == string()) << ")" << endl;
-    }
-    parseWord(word);
-
-    ofstream refinedCode("RefinedCode.txt");
-    refinedCode << tokenisedCode;
-    refinedCode.close();
-
-    //cout << tokenisedCode;
-    
-    //string endStr;
-    //cin >> endStr;
-    
-   return tokenisedCode;
-}
-*/
 
 int main()
 {
@@ -565,7 +354,7 @@ int main()
     tokeniser(RAW_CODE);
     for(int i = 0; i < tokenisedCode.size(); i++)
     {
-        cout << tokenisedCode[i].Value << " " << debugTypes.at(tokenisedCode[i].Type);
+        cout << tokenisedCode[i].Value << " " << debugTypes.at(tokenisedCode[i].Type) << " ";
         //cout << tokenisedCode[i].Value << " " << tokenisedCode[i].Type;
     }
 

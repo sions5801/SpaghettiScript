@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 using namespace std;
 
 const map<string, string> KEY_WORDS = {
@@ -131,6 +132,8 @@ string toToken(const string WORD)
     return WORD;
 }
 
+vector<string> identifiers;
+
 TokenType initToken(const string VALUE)
 {
     if (TYPE_MAP.find(VALUE) != TYPE_MAP.end())
@@ -155,15 +158,8 @@ TokenType initToken(const string VALUE)
 
     try {if (VALUE[0] == '"' && VALUE[VALUE.length()-1] == '"') {return STRING;}}
     catch (const exception& e) {}
+    
     return UNKNOWN;
-
-    /*
-    if (stof(VALUE)) {return FLOAT;}
-    if (stod(VALUE)) {return DOUBLE;}
-    if (VALUE == "TRUE" || VALUE == "FALSE") {return BOOLEAN;}
-    if (VALUE.length() == 3 && VALUE[0] == '\'' && VALUE[VALUE.length()-1] == '\'') {return CHARACTER;}
-    if (VALUE[0] == '"' && VALUE[VALUE.length()-1] == '"') {return STRING;}
-    */
 }
 
 #endif

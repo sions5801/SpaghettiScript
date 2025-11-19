@@ -134,7 +134,7 @@ string toToken(const string WORD)
 
 vector<string> identifiers;
 
-TokenType initToken(const string VALUE)
+TokenType initToken(const string VALUE, const TokenType PREVIOUS)
 {
     if (TYPE_MAP.find(VALUE) != TYPE_MAP.end())
     {
@@ -158,8 +158,19 @@ TokenType initToken(const string VALUE)
 
     try {if (VALUE[0] == '"' && VALUE[VALUE.length()-1] == '"') {return STRING;}}
     catch (const exception& e) {}
+
+    if (PREVIOUS == TYPE || find(identifiers.begin(), identifiers.end(), VALUE) != identifiers.end())
+    {
+        if (find(identifiers.begin(), identifiers.end(), VALUE) == identifiers.end())
+        {
+            identifiers.push_back(VALUE);
+        }
+        cout << "IDENTIFIER FOUND" << endl;
+        return IDENTIFIER;
+    }
     
     return UNKNOWN;
 }
 
 #endif
+

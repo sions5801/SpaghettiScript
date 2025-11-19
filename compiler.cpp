@@ -212,10 +212,10 @@ class Token {
     public:
         string Value;
         TokenType Type;
-        void Init(const string WORD)
+        void Init(const string WORD, const TokenType PREVIOUS_TYPE)
         {
             this->Value = toToken(WORD);
-            this->Type = initToken(Value); //pass value of previous token as string
+            this->Type = initToken(Value, PREVIOUS_TYPE); //pass value of previous token as string
         }
 };
 
@@ -238,7 +238,8 @@ void parseWord(string word)
     if (word == string()) {return;}
     
     Token newToken;
-    newToken.Init(word);
+    if (tokenisedCode.size()>1) {cout << tokenisedCode.size() << ">1" << endl; newToken.Init(word, tokenisedCode[tokenisedCode.size()-2].Type);}
+    else {cout << tokenisedCode.size() << "<1" << endl; newToken.Init(word, UNKNOWN);}
 
     tokenisedCode.push_back(newToken);
 }
@@ -249,7 +250,7 @@ vector<Token> tokeniser(string RAW_CODE)
 
     for (int i = 0; i < RAW_CODE.length(); i++)
     {
-        cout << RAW_CODE[i] << " " << endl;
+        //cout << RAW_CODE[i] << " " << endl;
         if (isspace(RAW_CODE[i]))
         {
             if (word != string())
@@ -322,7 +323,7 @@ vector<Token> tokeniser(string RAW_CODE)
         {
             word += RAW_CODE[i];
         }
-        cout << "word is " << word << endl;
+        //cout << "word is " << word << endl;
     }
 
 

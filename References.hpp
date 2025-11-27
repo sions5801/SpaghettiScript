@@ -165,7 +165,6 @@ TokenType initToken(const string VALUE, const TokenType PREVIOUS)
         {
             identifiers.push_back(VALUE);
         }
-        cout << "IDENTIFIER FOUND" << endl;
         return IDENTIFIER;
     }
     

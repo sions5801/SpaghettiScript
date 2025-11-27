@@ -238,7 +238,8 @@ void parseWord(string word)
     if (word == string()) {return;}
     
     Token newToken;
-    if (tokenisedCode.size()>1) {cout << tokenisedCode.size() << ">1" << endl; newToken.Init(word, tokenisedCode[tokenisedCode.size()-2].Type);}
+    //if (tokenisedCode.size()>1) {cout << "PREVIOUS TYPE IS: " << tokenisedCode[tokenisedCode.size()-1].Type << ", CURRENT WORD IS: " << word << " PREVIOUS VALUE IS: " << tokenisedCode[tokenisedCode.size()-1].Value;}
+    if (tokenisedCode.size()>1) {cout << tokenisedCode.size() << ">1" << endl; newToken.Init(word, tokenisedCode[tokenisedCode.size()-1].Type);}
     else {cout << tokenisedCode.size() << "<1" << endl; newToken.Init(word, UNKNOWN);}
 
     tokenisedCode.push_back(newToken);
